@@ -185,10 +185,6 @@ class StoryMenuState extends MusicBeatState
 		changeWeek();
 		changeDifficulty();
 
-		#if android
-		addVirtualPad(LEFT_FULL, A_B_X_Y);
-		#end
-
 		super.create();
 	}
 
@@ -224,14 +220,12 @@ class StoryMenuState extends MusicBeatState
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
 
-			#if !android
 			if(FlxG.mouse.wheel != 0)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 				changeWeek(-FlxG.mouse.wheel);
 				changeDifficulty();
 			}
-			#end
 
 			if (controls.UI_RIGHT)
 				rightArrow.animation.play('press')
@@ -250,19 +244,13 @@ class StoryMenuState extends MusicBeatState
 			else if (upP || downP)
 				changeDifficulty();
 
-			if(FlxG.keys.justPressed.CONTROL #if android || virtualPad.buttonX.justPressed #end)
+			if(FlxG.keys.justPressed.CONTROL)
 			{
-				#if android
-				removeVirtualPad();
-				#end
 				persistentUpdate = false;
 				openSubState(new GameplayChangersSubstate());
 			}
-			else if(controls.RESET #if android || virtualPad.buttonY.justPressed #end)
+			else if(controls.RESET)
 			{
-				#if android
-				removeVirtualPad();
-				#end
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubState('', curDifficulty, '', curWeek));
 				//FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -303,8 +291,13 @@ class StoryMenuState extends MusicBeatState
 
 				grpWeekText.members[curWeek].startFlashing();
 
-				var bf:MenuCharacter = grpWeekCharacters.members[1];
-				if(bf.character != '' && bf.hasConfirmAnimation) grpWeekCharacters.members[1].animation.play('confirm');
+				for (char in grpWeekCharacters.members)
+				{
+					if (char.character != '' && char.hasConfirmAnimation)
+					{
+						char.animation.play('confirm');
+					}
+				}
 				stopspamming = true;
 			}
 
